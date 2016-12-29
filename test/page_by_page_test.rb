@@ -21,4 +21,13 @@ class PageByPageTest < Minitest::Test
     refute_nil selector
   end
 
+  def test_404
+    pbp = PageByPage.new do
+      url 'http://ifeve.com/page/<%= n%>'
+      selector '.post .title'
+    end
+    nodes = pbp.fetch
+    assert_equal '聊聊并发（一）深入分析Volatile的实现原理', nodes[-1].text
+  end
+
 end

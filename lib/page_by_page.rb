@@ -26,10 +26,12 @@ class PageByPage
 
   def fetch
     items, all_items = [nil], []
-    until items.empty?
-      doc = parse @url.next
-      items = doc.css @selector
-      all_items << items
+    catch :no_more do
+      until items.empty?
+        doc = parse @url.next
+        items = doc.css @selector
+        all_items << items
+      end
     end
     all_items.flatten
   end
@@ -38,6 +40,12 @@ class PageByPage
 
   def parse url
     Nokogiri::HTML open url
+  rescue OpenURI::HTTPError => e
+    if e.message == '404 Not Found'
+      throw :no_more
+    else
+      raise e
+    end
   end
 
 end
