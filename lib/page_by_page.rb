@@ -17,18 +17,27 @@ class PageByPage
   end
 
   def url tmpl
-    @url = Url.new tmpl
+    @tmpl = tmpl
   end
 
   def selector sl
     @selector = sl
   end
 
+  def from n
+    @from = n
+  end
+
+  def step n
+    @step = n
+  end
+
   def fetch
+    url = Url.new @tmpl, options
     items, all_items = [nil], []
     catch :no_more do
       until items.empty?
-        doc = parse @url.next
+        doc = parse url.next
         items = doc.css @selector
         all_items << items
       end
@@ -46,6 +55,13 @@ class PageByPage
     else
       raise e
     end
+  end
+
+  def options
+    opt = {}
+    opt[:from] = @from || 1
+    opt[:step] = @step || 1
+    opt
   end
 
 end

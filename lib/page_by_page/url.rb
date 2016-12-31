@@ -7,14 +7,14 @@ class PageByPage
 
     def_delegator :@enum, :next
 
-    def initialize tmpl
+    def initialize tmpl, from: 1, step: 1
       @tmpl = ERB.new tmpl
       @enum = Enumerator.new do |yielder|
-        n = 1
+        n = from
         loop do
           rendered = @tmpl.result binding
           yielder.yield rendered
-          n = n.succ
+          n = n + step
         end
       end
     end

@@ -9,7 +9,7 @@ class PageByPageTest < Minitest::Test
     pbp = PageByPage.new do
       url 'http://foo.com/bar?p=<%= n %>'
     end
-    url = pbp.instance_variable_get :@url
+    url = pbp.instance_variable_get :@tmpl
     refute_nil url
   end
 
@@ -28,6 +28,17 @@ class PageByPageTest < Minitest::Test
     end
     nodes = pbp.fetch
     assert_equal '聊聊并发（一）深入分析Volatile的实现原理', nodes[-1].text
+  end
+
+  def test_can_define_from_and_step
+    pbp = PageByPage.new do
+      url 'https://book.douban.com/subject/4774858/reviews?start=<%= n%>'
+      selector '.review-item'
+      from 0
+      step 20
+    end
+    nodes = pbp.fetch
+    assert 30 > nodes.count
   end
 
 end
