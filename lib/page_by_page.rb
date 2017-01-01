@@ -1,5 +1,5 @@
 require 'page_by_page/version'
-require 'page_by_page/url'
+require 'page_by_page/enum'
 require 'nokogiri'
 require 'open-uri'
 
@@ -17,7 +17,7 @@ class PageByPage
   end
 
   def url tmpl
-    @tmpl = tmpl
+    @tmpl = ERB.new tmpl
   end
 
   def selector sl
@@ -32,12 +32,19 @@ class PageByPage
     @step = n
   end
 
+  def to n
+    @to = n
+  end
+
   def fetch
-    url = Url.new @tmpl, options
+    enum = Enum.new options
     items, all_items = [nil], []
     catch :no_more do
       until items.empty?
-        doc = parse url.next
+        n = enum.next
+        break if n > limit
+        url = @tmpl.result binding
+        doc = parse url
         items = doc.css @selector
         all_items << items
       end
@@ -62,6 +69,10 @@ class PageByPage
     opt[:from] = @from || 1
     opt[:step] = @step || 1
     opt
+  end
+
+  def limit
+    @to || Float::INFINITY
   end
 
 end

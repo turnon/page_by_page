@@ -22,6 +22,7 @@ class PageByPageTest < Minitest::Test
   end
 
   def test_404
+    skip
     pbp = PageByPage.new do
       url 'http://ifeve.com/page/<%= n%>'
       selector '.post .title'
@@ -39,6 +40,16 @@ class PageByPageTest < Minitest::Test
     end
     nodes = pbp.fetch
     assert 30 > nodes.count
+  end
+
+  def test_can_define_to
+    pbp = PageByPage.new do
+      url 'http://ifeve.com/page/<%= n%>'
+      selector '.post_wrap'
+      to 3
+    end
+    nodes = pbp.fetch
+    assert_equal 45, nodes.count
   end
 
 end
