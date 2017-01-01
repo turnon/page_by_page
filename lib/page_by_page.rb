@@ -55,7 +55,8 @@ class PageByPage
   private
 
   def parse url
-    Nokogiri::HTML open url
+    page = open(url)
+    Nokogiri::HTML page.read
   rescue OpenURI::HTTPError => e
     if e.message == '404 Not Found'
       throw :no_more
