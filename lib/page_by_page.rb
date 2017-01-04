@@ -51,13 +51,13 @@ class PageByPage
         @enum = MutexEnum.new options
         parallel_fetch
       end
-    nodes_2d.flatten
+    nodes_2d.reject(&:nil?).flatten
   end
 
   private
 
   def _fetch
-    items, all_items = [nil], []
+    items, pages = [nil], []
     catch :no_more do
       until items.empty?
         n = @enum.next
@@ -65,10 +65,10 @@ class PageByPage
         url = @tmpl.result binding
         doc = parse url
         items = doc.css @selector
-        all_items[n] = items
+        pages[n] = items
       end
     end
-    all_items
+    pages
   end
 
   def parallel_fetch

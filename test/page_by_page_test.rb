@@ -22,6 +22,7 @@ class PageByPageTest < Minitest::Test
   end
 
   def test_404
+    skip
     pbp = PageByPage.new do
       url 'http://ifeve.com/page/<%= n%>'
       selector '.post .title'
