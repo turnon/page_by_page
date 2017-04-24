@@ -24,6 +24,10 @@ Or install it yourself as:
 nodes = PageByPage.fetch do
   url 'https://book.douban.com/subject/25846075/comments/hot?p=<%= n %>'
   selector '.comment-item'
+  # from 2
+  # step 2
+  # to 100
+  # threads 4
 end
 ```
 
