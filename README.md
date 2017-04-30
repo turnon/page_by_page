@@ -28,6 +28,7 @@ nodes = PageByPage.fetch do
   # step 2
   # to 100
   # threads 4
+  # no_progress
 end
 ```
 

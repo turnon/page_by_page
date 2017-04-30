@@ -15,6 +15,8 @@ class PageByPage
   end
 
   def initialize &block
+    @from, @step, @to = 1, 1, Float::INFINITY
+    @progress = {}
     instance_eval &block
   end
 
@@ -42,6 +44,10 @@ class PageByPage
     @threads = n
   end
 
+  def no_progress
+    @progress = nil
+  end
+
   def fetch
     nodes_2d =
       unless defined? @threads
@@ -51,6 +57,7 @@ class PageByPage
         @enum = MutexEnum.new options
         parallel_fetch
       end
+    puts if @progress
     nodes_2d.reject(&:nil?).flatten
   end
 
@@ -66,6 +73,7 @@ class PageByPage
         doc = parse url
         items = doc.css @selector
         pages[n] = items
+        update_progress Thread.current, n if @progress
       end
     end
     pages
@@ -97,14 +105,16 @@ class PageByPage
   end
 
   def options
-    opt = {}
-    opt[:from] = @from ||= 1
-    opt[:step] = @step ||= 1
-    opt
+    {from: @from, step: @step}
   end
 
   def limit
     @to ||= Float::INFINITY
+  end
+
+  def update_progress thread, page_num
+    @progress[thread] = page_num
+    printf "\r%s => %s", Time.now.strftime('%F %T'), @progress.values.sort
   end
 
 end
