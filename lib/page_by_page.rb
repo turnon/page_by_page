@@ -44,7 +44,7 @@ class PageByPage
 
   def fetch
     nodes_2d =
-      unless @threads
+      unless defined? @threads
         @enum = Enum.new options
         _fetch
       else
@@ -98,13 +98,13 @@ class PageByPage
 
   def options
     opt = {}
-    opt[:from] = @from || 1
-    opt[:step] = @step || 1
+    opt[:from] = @from ||= 1
+    opt[:step] = @step ||= 1
     opt
   end
 
   def limit
-    @to || Float::INFINITY
+    @to ||= Float::INFINITY
   end
 
 end
