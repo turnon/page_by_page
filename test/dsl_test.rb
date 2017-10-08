@@ -7,17 +7,27 @@ class DslTest < Minitest::Test
     @nodes = PageByPage.fetch do
       url 'https://book.douban.com/subject/4774858/comments/hot?p=<%= n %>'
       selector '.comment-item'
+      no_progress
     end
+
+    @nodes_2 = PageByPage.fetch(
+      url: 'https://book.douban.com/subject/4774858/comments/hot?p=<%= n %>',
+      selector: '.comment-item',
+      no_progress: true
+    )
   end
 
   def test_can_fetch_all_pages
     count = total_count 'https://book.douban.com/subject/4774858/comments/'
     assert_equal count, @nodes.count
+    assert_equal count, @nodes_2.count
   end
 
   def test_work_as_nokogiri
     assert @nodes.any? { |n| /rails开发一条龙/ =~ comment_content(n) }
     assert @nodes.any? { |n| /RoR入门/ =~ comment_content(n) }
+    assert @nodes_2.any? { |n| /rails开发一条龙/ =~ comment_content(n) }
+    assert @nodes_2.any? { |n| /RoR入门/ =~ comment_content(n) }
   end
 
   private

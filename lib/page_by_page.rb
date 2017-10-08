@@ -8,16 +8,17 @@ require 'erb'
 class PageByPage
 
   class << self
-    def fetch &block
-      pbp = self.new &block
+    def fetch(opt ={}, &block)
+      pbp = self.new(opt, &block)
       pbp.fetch
     end
   end
 
-  def initialize &block
+  def initialize(opt = {}, &block)
     @from, @step, @to = 1, 1, Float::INFINITY
     @progress = {}
-    instance_eval &block
+    opt.each{ |name, value| send name, value }
+    instance_eval &block if block
   end
 
   def url tmpl
@@ -44,7 +45,7 @@ class PageByPage
     @threads = n
   end
 
-  def no_progress
+  def no_progress *arg
     @progress = nil
   end
 

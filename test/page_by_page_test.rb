@@ -13,10 +13,22 @@ class PageByPageTest < Minitest::Test
     refute_nil url
   end
 
+  def test_can_set_url_pattern_via_parameter
+    pbp = PageByPage.new url: 'http://foo.com/bar?p=<%= n %>'
+    url = pbp.instance_variable_get :@tmpl
+    refute_nil url
+  end
+
   def test_can_set_selector
     pbp = PageByPage.new do
       selector '.items'
     end
+    selector = pbp.instance_variable_get :@selector
+    refute_nil selector
+  end
+
+  def test_can_set_selector_via_parameter
+    pbp = PageByPage.new selector: '.items'
     selector = pbp.instance_variable_get :@selector
     refute_nil selector
   end

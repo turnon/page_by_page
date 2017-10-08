@@ -32,3 +32,16 @@ nodes = PageByPage.fetch do
 end
 ```
 
+Or just passing parameters:
+
+```ruby
+nodes = PageByPage.fetch(
+  url: 'https://book.douban.com/subject/25846075/comments/hot?p=<%= n %>',
+  selector: '.comment-item',
+  # from: 2,
+  # step: 2,
+  # to: 100,
+  # threads: 4,
+  # no_progress: true
+)
+```
