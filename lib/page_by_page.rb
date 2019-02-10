@@ -34,10 +34,14 @@ class PageByPage
     @selector = sl
   end
 
+  def header hash
+    @header = hash
+  end
+
   private
 
   def parse url
-    page = open(url)
+    page = open(url, http_header)
     Nokogiri::HTML page.read
   rescue OpenURI::HTTPError => e
     if e.message == '404 Not Found'
@@ -45,6 +49,14 @@ class PageByPage
     else
       raise e
     end
+  end
+
+  def http_header
+    @http_header ||= (
+      h = {}
+      Hash(@header).each_pair{ |k, v| h[k.to_s] = v }
+      h
+    )
   end
 
   def limit
