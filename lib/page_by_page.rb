@@ -1,16 +1,21 @@
 require 'page_by_page/version'
 require 'page_by_page/fetch'
+require 'page_by_page/jump'
 require 'nokogiri'
 require 'open-uri'
 
 class PageByPage
 
   include Fetch
+  include Jump
 
   class << self
-    def fetch(opt ={}, &block)
-      pbp = self.new(opt, &block)
-      pbp.fetch
+    def fetch(*args, &block)
+      new(*args, &block).fetch
+    end
+
+    def jump(*args, &block)
+      new(*args, &block).jump
     end
   end
 
@@ -19,6 +24,14 @@ class PageByPage
     @progress = {}
     opt.each{ |name, value| send name, value }
     instance_eval &block if block
+  end
+
+  def to n
+    @to = n
+  end
+
+  def selector sl
+    @selector = sl
   end
 
   private
@@ -32,10 +45,6 @@ class PageByPage
     else
       raise e
     end
-  end
-
-  def options
-    {from: @from, step: @step}
   end
 
   def limit

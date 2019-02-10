@@ -9,20 +9,12 @@ class PageByPage
       @tmpl = ERB.new tmpl
     end
 
-    def selector sl
-      @selector = sl
-    end
-
     def from n
       @from = n
     end
 
     def step n
       @step = n
-    end
-
-    def to n
-      @to = n
     end
 
     def threads n
@@ -36,10 +28,10 @@ class PageByPage
     def fetch
       nodes_2d =
         unless defined? @threads
-          @enum = Enum.new options
+          @enum = Enum.new enum_options
           _fetch
         else
-          @enum = MutexEnum.new options
+          @enum = MutexEnum.new enum_options
           parallel_fetch
         end
       puts if @progress
@@ -76,6 +68,10 @@ class PageByPage
           pages[i] = items if items
         end
       end
+    end
+
+    def enum_options
+      {from: @from, step: @step}
     end
 
   end
