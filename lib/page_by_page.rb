@@ -1,16 +1,21 @@
 require 'page_by_page/version'
-require 'page_by_page/enum'
-require 'page_by_page/mutex_enum'
+require 'page_by_page/fetch'
+require 'page_by_page/jump'
 require 'nokogiri'
 require 'open-uri'
-require 'erb'
 
 class PageByPage
 
+  include Fetch
+  include Jump
+
   class << self
-    def fetch(opt ={}, &block)
-      pbp = self.new(opt, &block)
-      pbp.fetch
+    def fetch(*args, &block)
+      new(*args, &block).fetch
+    end
+
+    def jump(*args, &block)
+      new(*args, &block).jump
     end
   end
 
@@ -21,81 +26,22 @@ class PageByPage
     instance_eval &block if block
   end
 
-  def url tmpl
-    @tmpl = ERB.new tmpl
+  def to n
+    @to = n
   end
 
   def selector sl
     @selector = sl
   end
 
-  def from n
-    @from = n
-  end
-
-  def step n
-    @step = n
-  end
-
-  def to n
-    @to = n
-  end
-
-  def threads n
-    @threads = n
-  end
-
-  def no_progress *arg
-    @progress = nil
-  end
-
-  def fetch
-    nodes_2d =
-      unless defined? @threads
-        @enum = Enum.new options
-        _fetch
-      else
-        @enum = MutexEnum.new options
-        parallel_fetch
-      end
-    puts if @progress
-    nodes_2d.reject(&:nil?).flatten
+  def header hash
+    @header = hash
   end
 
   private
 
-  def _fetch
-    items, pages = [nil], []
-    catch :no_more do
-      until items.empty?
-        n = @enum.next
-        break if n > limit
-        url = @tmpl.result binding
-        doc = parse url
-        items = doc.css @selector
-        pages[n] = items
-        update_progress Thread.current, n if @progress
-      end
-    end
-    pages
-  end
-
-  def parallel_fetch
-    ts = @threads.times.map do |n|
-      Thread.new do
-        Thread.current[:sub] = _fetch
-      end
-    end
-    ts.each_with_object([]) do |t, pages|
-      t.join
-      t[:sub].each_with_index do |items, i|
-        pages[i] = items if items
-      end
-    end
-  end
-
   def parse url
-    page = open(url)
+    page = open(url, http_header)
     Nokogiri::HTML page.read
   rescue OpenURI::HTTPError => e
     if e.message == '404 Not Found'
@@ -105,8 +51,12 @@ class PageByPage
     end
   end
 
-  def options
-    {from: @from, step: @step}
+  def http_header
+    @http_header ||= (
+      h = {}
+      Hash(@header).each_pair{ |k, v| h[k.to_s] = v }
+      h
+    )
   end
 
   def limit
