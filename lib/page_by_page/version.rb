@@ -1,3 +1,3 @@
-class PageByPage
-  VERSION = "0.1.10"
+module PageByPage
+  VERSION = "0.1.11"
 end
