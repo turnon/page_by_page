@@ -1,5 +1,9 @@
-class PageByPage
-  module Jump
+require 'page_by_page/common'
+
+module PageByPage
+  class Jump
+
+    include Common
 
     def start url
       @start = url
@@ -9,7 +13,7 @@ class PageByPage
       @iterate = selector
     end
 
-    def jump
+    def process
       url, items, page_count = @start, [], 0
 
       while true do

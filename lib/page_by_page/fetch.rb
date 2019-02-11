@@ -1,9 +1,17 @@
 require 'page_by_page/enum'
 require 'page_by_page/mutex_enum'
+require 'page_by_page/common'
 require 'erb'
 
-class PageByPage
-  module Fetch
+module PageByPage
+  class Fetch
+
+    include Common
+
+    def initialize(opt = {}, &block)
+      @from, @step, @to = 1, 1, Float::INFINITY
+      super
+    end
 
     def url tmpl
       @tmpl = ERB.new tmpl
@@ -25,7 +33,7 @@ class PageByPage
       @progress = nil
     end
 
-    def fetch
+    def process
       nodes_2d =
         unless defined? @threads
           @enum = Enum.new enum_options

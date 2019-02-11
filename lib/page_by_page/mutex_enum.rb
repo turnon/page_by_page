@@ -1,6 +1,6 @@
 require 'page_by_page/enum'
 
-class PageByPage
+module PageByPage
   class MutexEnum < Enum
 
     def initialize from: 1, step: 1

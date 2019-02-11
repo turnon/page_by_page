@@ -1,4 +1,4 @@
-class PageByPage
+module PageByPage
   class Enum
 
     def initialize from: 1, step: 1
