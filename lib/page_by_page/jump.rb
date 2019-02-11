@@ -23,7 +23,10 @@ class PageByPage
         url = concat_host path
 
         page_count += 1
+        update_progress Thread.current, page_count if @progress
         break if page_count >= limit
+
+        sleep @interval if @interval
       end
 
       items

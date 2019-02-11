@@ -29,6 +29,7 @@ nodes = PageByPage.fetch do
   # from 2
   # step 2
   # to 100
+  # interval 3
   # threads 4
   # no_progress
   # header Cookie: 'douban-fav-remind=1'
@@ -43,6 +44,8 @@ nodes = PageByPage.jump do
   iterate '.comment-paginator li:nth-child(3) a'
   selector '.comment-item'
   # to 100
+  # interval 3
+  # no_progress
   # header Cookie: 'douban-fav-remind=1'
 end
 ```
@@ -56,6 +59,7 @@ nodes = PageByPage.fetch(
   # from: 2,
   # step: 2,
   # to: 100,
+  # interval: 3
   # threads: 4,
   # no_progress: true
   # header: {Cookie: 'douban-fav-remind=1'}

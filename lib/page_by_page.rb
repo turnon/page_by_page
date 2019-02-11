@@ -38,6 +38,10 @@ class PageByPage
     @header = hash
   end
 
+  def interval second
+    @interval = second
+  end
+
   private
 
   def parse url

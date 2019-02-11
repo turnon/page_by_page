@@ -46,11 +46,14 @@ class PageByPage
         until items.empty?
           n = @enum.next
           break if n > limit
+
           url = @tmpl.result binding
           doc = parse url
           items = doc.css @selector
           pages[n] = items
+
           update_progress Thread.current, n if @progress
+          sleep @interval if @interval
         end
       end
       pages
