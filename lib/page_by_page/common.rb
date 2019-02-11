@@ -25,6 +25,10 @@ module PageByPage
       @interval = second
     end
 
+    def no_progress *arg
+      @progress = nil
+    end
+
     protected
 
     def parse url

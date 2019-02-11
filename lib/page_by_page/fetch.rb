@@ -29,10 +29,6 @@ module PageByPage
       @threads = n
     end
 
-    def no_progress *arg
-      @progress = nil
-    end
-
     def process
       nodes_2d =
         unless defined? @threads

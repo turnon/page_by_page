@@ -20,19 +20,20 @@ module PageByPage
         doc = parse url
         doc.css(@selector).each{ |item| items << item }
 
+        page_count += 1
+        update_progress Thread.current, page_count if @progress
+        break if page_count >= limit
+
         next_url = doc.at_css(@iterate)
         break unless next_url
 
         path = next_url.attr('href')
         url = concat_host path
 
-        page_count += 1
-        update_progress Thread.current, page_count if @progress
-        break if page_count >= limit
-
         sleep @interval if @interval
       end
 
+      puts if @progress
       items
     end
 
