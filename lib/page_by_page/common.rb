@@ -32,6 +32,7 @@ module PageByPage
     protected
 
     def parse url
+      url = URI::encode url
       page = open(url, http_header)
       Nokogiri::HTML page.read
     rescue OpenURI::HTTPError => e
