@@ -64,4 +64,14 @@ class PageByPageTest < Minitest::Test
     assert_equal 45, nodes.count
   end
 
+  def test_can_fetch_one_by_one
+    pbp = PageByPage::Fetch.new do
+      url 'http://ifeve.com/page/<%= n%>'
+      selector '.post_wrap'
+      to 3
+    end
+    it = pbp.iterator
+    assert_equal 4, it.first(4).count
+  end
+
 end

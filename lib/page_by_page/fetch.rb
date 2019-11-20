@@ -11,6 +11,7 @@ module PageByPage
     def initialize(opt = {}, &block)
       @from, @step, @to = 1, 1, Float::INFINITY
       super
+      @enum = (defined?(@threads) ? MutexEnum : Enum).new(enum_options)
     end
 
     def url tmpl
@@ -30,37 +31,51 @@ module PageByPage
     end
 
     def process
-      nodes_2d =
-        unless defined? @threads
-          @enum = Enum.new enum_options
-          _fetch
-        else
-          @enum = MutexEnum.new enum_options
-          parallel_fetch
-        end
+      nodes_2d = defined?(@threads) ? parallel_fetch : _fetch
       puts if @progress
       nodes_2d.reject(&:nil?).flatten
+    end
+
+    def iterator
+      Enumerator.new do |yielder|
+        items_enum.each do |_, items|
+          items.each do |i|
+            yielder.yield(i)
+          end
+        end
+      end
     end
 
     protected
 
     def _fetch
-      items, pages = [nil], []
-      catch :no_more do
-        until items.empty?
-          n = @enum.next
-          break if n > limit
+      pages = []
 
-          url = @tmpl.result binding
-          doc = parse url
-          items = doc.css @selector
-          pages[n] = items
+      items_enum.each do |page_num, items|
+        pages[page_num] = items
+      end
 
-          update_progress Thread.current, n if @progress
-          sleep @interval if @interval
+      pages
+    end
+
+    def items_enum
+      Enumerator.new do |yielder|
+        items = [nil]
+        catch :no_more do
+          until items.empty?
+            n = @enum.next
+            break if n > limit
+
+            url = @tmpl.result binding
+            doc = parse url
+            items = doc.css @selector
+            yielder.yield(n, items)
+
+            update_progress Thread.current, n if @progress
+            sleep @interval if @interval
+          end
         end
       end
-      pages
     end
 
     def parallel_fetch
