@@ -10,5 +10,5 @@ require "page_by_page"
 # require "pry"
 # Pry.start
 
-require "irb"
-IRB.start
+require "pry"
+pry

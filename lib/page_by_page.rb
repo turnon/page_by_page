@@ -9,6 +9,10 @@ module PageByPage
       Fetch.new(*args, &block).process
     end
 
+    def lazy_fetch(*args, &block)
+      Fetch.new(*args, &block).iterator
+    end
+
     def jump(*args, &block)
       Jump.new(*args, &block).process
     end

@@ -65,3 +65,11 @@ nodes = PageByPage.fetch(
   # header: {Cookie: 'douban-fav-remind=1'}
 )
 ```
+
+Also note that, instead of Array, `lazy_fetch` returns an Enumerator, which is native lazy-loading:
+
+```ruby
+nodes = PageByPage.lazy_fetch(
+  #...
+)
+```
