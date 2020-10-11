@@ -11,7 +11,8 @@ module PageByPage
     def initialize(opt = {}, &block)
       @from, @step, @to = 1, 1, Float::INFINITY
       super
-      @enum = (defined?(@threads) ? MutexEnum : Enum).new(enum_options)
+      @enum = Enum.new(enum_options)
+      @enum = MutexEnum.new(@enum) if defined? @threads
     end
 
     def url tmpl

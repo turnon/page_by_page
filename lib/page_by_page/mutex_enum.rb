@@ -4,13 +4,12 @@ require 'thread'
 module PageByPage
   class MutexEnum < Enum
 
-    def initialize from: 1, step: 1, limit: nil, enumerator: nil
-      super
+    def initialize enum
       @q = SizedQueue.new 10
+      @enum = enum
       Thread.new do
         loop do
-          n = @enum.next rescue nil
-          @q << n
+          @q << @enum.next
         end
       end
     end
