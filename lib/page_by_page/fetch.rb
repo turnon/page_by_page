@@ -30,10 +30,17 @@ module PageByPage
       @threads = n
     end
 
+    def enumerator e
+      @enumerator = e
+    end
+
     def process
       nodes_2d = defined?(@threads) ? parallel_fetch : _fetch
       puts if @progress
-      nodes_2d.reject(&:nil?).flatten
+
+      nodes_2d.sort.each_with_object([]) do |key_items, res|
+        res.concat key_items[1] unless key_items[1].nil?
+      end
     end
 
     def iterator
@@ -49,7 +56,7 @@ module PageByPage
     protected
 
     def _fetch
-      pages = []
+      pages = {}
 
       items_enum.each do |page_num, items|
         pages[page_num] = items
@@ -64,7 +71,7 @@ module PageByPage
         catch :no_more do
           until items.empty?
             n = @enum.next
-            break if n > limit
+            break if n.nil?
 
             url = @tmpl.result binding
             doc = parse url
@@ -84,16 +91,14 @@ module PageByPage
           Thread.current[:sub] = _fetch
         end
       end
-      ts.each_with_object([]) do |t, pages|
+      ts.each_with_object({}) do |t, pages|
         t.join
-        t[:sub].each_with_index do |items, i|
-          pages[i] = items if items
-        end
+        pages.merge! t[:sub]
       end
     end
 
     def enum_options
-      {from: @from, step: @step}
+      {from: @from, step: @step, limit: limit, enumerator: @enumerator}
     end
 
   end

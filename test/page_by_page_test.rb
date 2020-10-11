@@ -75,6 +75,16 @@ class PageByPageTest < Minitest::Test
     assert_equal 45, nodes.count
   end
 
+  def test_can_define_enum
+    pbp = PageByPage::Fetch.new do
+      url 'http://ifeve.com/page/<%= n%>'
+      selector '.post_wrap'
+      enumerator (1..3).to_enum
+    end
+    nodes = pbp.process
+    assert_equal 45, nodes.count
+  end
+
   def test_can_fetch_one_by_one
     pbp = PageByPage::Fetch.new do
       url 'http://ifeve.com/page/<%= n%>'
