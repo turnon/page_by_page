@@ -64,6 +64,17 @@ class PageByPageTest < Minitest::Test
     assert_equal 45, nodes.count
   end
 
+  def test_can_jump
+    pbp = PageByPage::Jump.new do
+      start 'http://ifeve.com'
+      iterate '.next'
+      selector '.post_wrap'
+      to 3
+    end
+    nodes = pbp.process
+    assert_equal 45, nodes.count
+  end
+
   def test_can_fetch_one_by_one
     pbp = PageByPage::Fetch.new do
       url 'http://ifeve.com/page/<%= n%>'

@@ -28,7 +28,7 @@ module PageByPage
         break unless next_url
 
         path = next_url.attr('href')
-        url = concat_host path
+        url = path.start_with?('/') ? concat_host(path) : path
 
         sleep @interval if @interval
       end
