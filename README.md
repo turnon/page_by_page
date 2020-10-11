@@ -20,7 +20,9 @@ Or install it yourself as:
 
 ## Usage
 
-If you know page number pattern, use fetch:
+### number pattern
+
+If you know page number pattern, use `fetch`:
 
 ```ruby
 nodes = PageByPage.fetch do
@@ -36,7 +38,21 @@ nodes = PageByPage.fetch do
 end
 ```
 
-If you don't know the pattern, but you see link to next page, use jump:
+### other pattern
+
+If the pattern is not simple numbers, use `enumerator` in `fetch`:
+
+```ruby
+nodes = PageByiPage.fetch do
+  url 'http://mysql.taobao.org/monthly/<%= n %>'
+  selector 'h3'
+  enumerator ['2020/09/', '2020/08/'].to_enum
+end
+```
+
+### unknown pattern
+
+If you don't know the pattern, but you see link to next page, use `jump`:
 
 ```ruby
 nodes = PageByPage.jump do
@@ -49,6 +65,8 @@ nodes = PageByPage.jump do
   # header Cookie: 'douban-fav-remind=1'
 end
 ```
+
+### parameters instead of block
 
 You may just pass parameters instead of block:
 
@@ -65,6 +83,8 @@ nodes = PageByPage.fetch(
   # header: {Cookie: 'douban-fav-remind=1'}
 )
 ```
+
+### lazy
 
 Also note that, instead of Array, `lazy_fetch` returns an Enumerator, which is native lazy-loading:
 
