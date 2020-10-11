@@ -1,15 +1,15 @@
 require 'page_by_page/enum'
+require 'thread'
 
 module PageByPage
   class MutexEnum < Enum
 
-    def initialize from: 1, step: 1
-      super
+    def initialize enum
       @q = SizedQueue.new 10
+      @enum = enum
       Thread.new do
         loop do
           @q << @enum.next
-          sleep 0.1
         end
       end
     end
